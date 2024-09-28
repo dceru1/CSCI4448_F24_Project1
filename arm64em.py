@@ -58,8 +58,7 @@ def main():
 	# Parse data ------------------------
 	lineNumber = 0
 	for x in instructions:
-		parser = re.findall(r"[\w]+|\[.*?\]", x)		# Seperates elements by whitespace or comma, keep bracket content together
-
+		parser = parse(x)					# Parse the instruction
 		print("\nLine Number:", lineNumber)			# Print line number
 		print("Instruction", parser[0])				# Print instruction
 
@@ -121,6 +120,11 @@ def main():
 
 # FUNCTIONS -----------------------------------------------------------
 # operands is a list of the instruction inputs
+
+
+def parse(assemLine):		# Inputs a string, returns a list with seperated instruction and operands
+	parser = re.findall(r"[\w]+|\[.*?\]", assemLine)		# Seperates elements by whitespace or comma, keep bracket content together
+	return parser
 
 def asmSUB(operands):
 	print("Subracting", operands)
