@@ -1,3 +1,6 @@
+# Example usage: "python3 arm64em.py test.txt" 
+
+
 import re
 import sys
 
