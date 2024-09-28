@@ -1,6 +1,47 @@
+# Example usage: "python3 arm64em.py test.txt" 
+
+
 import re
 import sys
 
+
+# Register init-------------------------------
+registers = {
+	'X1': 0x0000000000000000,
+	'X2': 0x0000000000000000,
+	'X3': 0x0000000000000000,
+	'X4': 0x0000000000000000,
+	'X5': 0x0000000000000000,
+	'X6': 0x0000000000000000,
+	'X7': 0x0000000000000000,
+	'X8': 0x0000000000000000,
+	'X9': 0x0000000000000000,
+	'X10': 0x0000000000000000,
+	'X11': 0x0000000000000000,
+	'X12': 0x0000000000000000,
+	'X13': 0x0000000000000000,
+	'X14': 0x0000000000000000,
+	'X15': 0x0000000000000000,
+	'X16': 0x0000000000000000,
+	'X17': 0x0000000000000000,
+	'X18': 0x0000000000000000,
+	'X19': 0x0000000000000000,
+	'X20': 0x0000000000000000,
+	'X21': 0x0000000000000000,
+	'X22': 0x0000000000000000,
+	'X23': 0x0000000000000000,
+	'X24': 0x0000000000000000,
+	'X25': 0x0000000000000000,
+	'X26': 0x0000000000000000,
+	'X27': 0x0000000000000000,
+	'X28': 0x0000000000000000,
+	'X29': 0x0000000000000000,
+	'X30': 0x0000000000000000,
+	'SP': 0x0000000000000000,
+	'PC': 0x0000000000000000,
+	'N': 0,
+	'Z': 0
+}
 
 
 # main -------------------------------------------------------------------
@@ -19,13 +60,10 @@ def main():
 	for x in instructions:
 		parser = re.findall(r"[\w]+|\[.*?\]", x)		# Seperates elements by whitespace or comma, keep bracket content together
 
-
-
 		print("\nLine Number:", lineNumber)			# Print line number
 		print("Instruction", parser[0])				# Print instruction
 
-
-		match parser[0]:					
+		match parser[0]:					# Call instruction function
 			case 'SUB':
 				asmSUB(parser[1:])
 			case 'EOR':
@@ -70,8 +108,14 @@ def main():
 
 		lineNumber+=1
 
-	
 
+	# Register print --------------------------
+	print()
+	for x, y in registers.items():
+		if x != 'N' and x != 'Z':
+			print(f"{x}: {y:#018x}")
+		else:
+			print(f"{x}: {y}")
 
 
 

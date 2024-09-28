@@ -1,0 +1,3 @@
+ADD x3, x1, x2
+SUB x2, x8, x2
+LDR x0, [SP, 0x08]
