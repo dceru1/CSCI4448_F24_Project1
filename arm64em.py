@@ -47,6 +47,16 @@ registers = {
 
 # main -------------------------------------------------------------------
 def main():
+
+	# Initialize stack -----------------------
+	stack = stackClass(256)
+
+	# Stack testing
+	stack.push(0x1A)
+	stack.push(0xFF)
+	stack.push(0x4B)
+	value = stack.pop()
+
 	#Take file input----------------------
 	fileName = sys.argv[1]
 	fileIn = open(fileName, 'r')
@@ -99,6 +109,7 @@ def main():
 				asmCMP(parser[3:])
 			case 'RET':
 				regPrint()
+				stack.stackPrint()
 				return
 			case _:
 				print("Sorry")
@@ -114,22 +125,71 @@ def main():
 
 
 
+# CLASSES ------------------------------------------------------------
+class stackClass:
+	def __init__(self, maxSize):
+		self.stack = []
+		self.maxSize = int(256)	# 256 bytes max
+	def push(self, input):
+		if len(self.stack) < self.maxSize:
+			self.stack.append(input)
+		else:
+			raise OverflowError("Stack Overflow: Stack exceeds maximum size")
+	def pop(self):
+		if len(self.stack) > 0:
+			return self.stack.pop()
+		else:
+			raise IndexError("Stack Underflow: Can not pop, stack empty")
+	def stackView(self):
+		if len(self.stack) > 0:
+			return self.stack[-1]
+		else:
+			raise IndexError("Stack Underflow: Stack empty")
+	def stackPrint(self):
+		addr = 0	# Address print counter
+		fillStack = self.stack + [None] * (256 - len(self.stack))	# Fill stack with None to max out size
+		print()
+		for i in range(255, -1, -1):					# Print Bytes + Translate
+
+			if (i+1) % 16 == 0:					# Print address
+				print(f"{addr:08x}", end="\t")
+				addr+=16
+
+			byte = fillStack[i]					# Byte starts at most recent in stack
+
+			if byte is not None:					# If Byte isn't empty, print the byte
+				print(f"{format(byte, "x")}", "", end="")
+			else:							# If Byte is empty, print 00
+				print("00 ", end="")
+
+			if i % 16 == 0:						# Every 16 bytes, perform the translator
+				print("|", end="")
+				for j in range(16):				# Print 16 values (1 for each byte)
+					if fillStack[(i+16)-(j+1)] != None:
+						print(chr(fillStack[(i+16)-(j+1)]), end="")	# Print translated version of the byte
+					else:
+						print(".", end="")		# If empty print '.'
+
+				print("|\n")					# Close line
+
+
+
 # FUNCTIONS -----------------------------------------------------------
 # operands is a list of the instruction inputs
 
-def parse(assemLine):		# Inputs a string, returns a list of independent values from string
+# Inputs a string, returns a list of independent values from string
+def parse(assemLine):	
 	parser = re.findall(r"[\w]+|\[.*?\]", assemLine)		# Seperates elements by whitespace or comma, keep bracket content together
 	return parser
 
-def regPrint():			# Print register contents
+# Print register content
+def regPrint():
 	print()
 	for x, y in registers.items():
 		if x != 'N' and x != 'Z':
 			print(f"{x}: {y:#018x}")
 		else:
 			print(f"{x}: {y}")
-
-
 
 def asmSUB(operands):
 	print("Subracting", operands)
