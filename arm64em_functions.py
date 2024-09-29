@@ -1,5 +1,12 @@
+import re
+from arm64em_structures import registers
+from arm64em_structures import stackClass
+#Function to convert a w reg to a xreg
+#def wreg_to_xreg(registers : dict, )
 
-def SUB(registers : dict, ret : str, arg1 : str, arg2 : str):
+
+
+def SUB(ret : str, arg1 : str, arg2 : str):
     # arg2 is another register
     if( (not arg2.find("x")) and (not arg2.find("w")) ):
         registers[ret] = registers[arg1] - registers[arg2]
@@ -11,7 +18,7 @@ def SUB(registers : dict, ret : str, arg1 : str, arg2 : str):
         registers[ret] = registers[arg1] - int(arg2, 10)
     return
 
-def ADD(registers : dict, ret : str, arg1 : str, arg2 : str):
+def ADD(ret : str, arg1 : str, arg2 : str):
     # arg2 is another register
     if( (not arg2.find("x")) and (not arg2.find("w")) ):
         registers[ret] = registers[arg1] + registers[arg2]
@@ -23,7 +30,7 @@ def ADD(registers : dict, ret : str, arg1 : str, arg2 : str):
         registers[ret] = registers[arg1] + int(arg2, 10)
     return
 
-def EOR(registers : dict, ret : str, arg1 : str, arg2 : str):
+def EOR(ret : str, arg1 : str, arg2 : str):
     # arg2 is another register
     if( (not arg2.find("x")) and (not arg2.find("w")) ):
         registers[ret] = registers[arg1] ^ registers[arg2]
@@ -35,7 +42,7 @@ def EOR(registers : dict, ret : str, arg1 : str, arg2 : str):
         registers[ret] = registers[arg1] ^ int(arg2, 10)
     return
 
-def AND(registers : dict, ret : str, arg1 : str, arg2 : str):
+def AND(ret : str, arg1 : str, arg2 : str):
     # arg2 is another register
     if( (not arg2.find("x")) and (not arg2.find("w")) ):
         registers[ret] = registers[arg1] & registers[arg2]
@@ -47,7 +54,7 @@ def AND(registers : dict, ret : str, arg1 : str, arg2 : str):
         registers[ret] = registers[arg1] & int(arg2, 10)
     return
 
-def MUL(registers : dict, ret : str, arg1 : str, arg2 : str):
+def MUL(ret : str, arg1 : str, arg2 : str):
         # arg2 is another register
     if( (not arg2.find("x")) and (not arg2.find("w")) ):
         registers[ret] = registers[arg1] * registers[arg2]
@@ -59,7 +66,7 @@ def MUL(registers : dict, ret : str, arg1 : str, arg2 : str):
         registers[ret] = registers[arg1] * int(arg2, 10)
     return
     
-def MOV(registers : dict, arg1 : str, arg2 : str):
+def MOV(arg1 : str, arg2 : str):
     # arg2 is another register
     if( (not arg2.find("x")) and (not arg2.find("w")) ):
         registers[arg1] = registers[arg2]
@@ -71,9 +78,12 @@ def MOV(registers : dict, arg1 : str, arg2 : str):
         registers[arg1] = int(arg2, 10)
     return
     
-def STR(registers : dict, ret : str, arg1 : str, arg2 : str):
-    # arg2 is another register
-    if( (not arg2.find("x"))):
+def STR(stack : stackClass, arg1 : str, arg2 : str):
+    # command includes a STR immediate offset
+    if( (not arg2.find("[")) and (arg2.find("]")) ):
+        parser = re.findall(r"[\w]+|^\[.*?^\]", arg2)
+        if(parser[0] == 'sp'):
+            stack.p
         registers[arg2] = registers[arg1]
     # arg2 is a base 16 value
     elif(not arg2.find("0x")):
@@ -90,9 +100,6 @@ def LDR(registers : dict, ret : str, arg1 : str, arg2 : str):
     return
     
 def LDRB(registers : dict, ret : str, arg1 : str, arg2 : str):
-    return
-    
-def NOP():
     return
 
 def B(registers : dict, ret : str, arg1 : str, arg2 : str):
