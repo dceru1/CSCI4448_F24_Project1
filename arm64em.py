@@ -60,48 +60,50 @@ def main():
 	for x in instructions:
 		parser = parse(x)					# Parse the instruction
 		print("\nLine Number:", lineNumber)			# Print line number
-		print("Instruction", parser[0])				# Print instruction
+		print("Address:", parser[0])				# Print Address
+		print("Opcode:", parser[1])				# Print Opcode
+		print("Instruction", parser[2].upper())			# Print instruction
 
-		match parser[0]:					# Call instruction function
+		match parser[2].upper():					# Call instruction function
 			case 'SUB':
-				asmSUB(parser[1:])
+				asmSUB(parser[3:])
 			case 'EOR':
-				asmEOR(parser[1:])
+				asmEOR(parser[3:])
 			case 'ADD':
-				asmADD(parser[1:])
+				asmADD(parser[3:])
 			case 'AND':
-				asmAND(parser[1:])
+				asmAND(parser[3:])
 			case 'MUL':
-				asmMUL(parser[1:])
+				asmMUL(parser[3:])
 			case 'MOV':
-				asmMOV(parser[1:])
+				asmMOV(parser[3:])
 			case 'STR':
-				asmSTR(parser[1:])
+				asmSTR(parser[3:])
 			case 'STRB':
-				asmSTRB(parser[1:])
+				asmSTRB(parser[3:])
 			case 'LDR':
-				asmLDR(parser[1:])
+				asmLDR(parser[3:])
 			case 'LDRB':
-				asmLDRB(parser[1:])
+				asmLDRB(parser[3:])
 			case 'NOP':
-				asmNOP(parser[1:])
+				asmNOP(parser[3:])
 			case 'B':
-				asmB(parser[1:])
+				asmB(parser[3:])
 			case 'B.GT':
-				asmBGT(parser[1:])
+				asmBGT(parser[3:])
 			case 'B.LE':
-				asmBLE(parser[1:])
+				asmBLE(parser[3:])
 			case 'CMP':
-				asmCMP(parser[1:])
+				asmCMP(parser[3:])
 			case 'RET':
-				asmRET(parser[1:])
+				asmRET(parser[3:])
 			case _:
 				print("Sorry")
 
 
 
 		operandCounter = 1	#TMP
-		for n in parser[1:]:
+		for n in parser[3:]:
 			print("Operand", operandCounter, ":", n)	# Print operand (looped)
 			operandCounter+=1
 
@@ -122,7 +124,7 @@ def main():
 # operands is a list of the instruction inputs
 
 
-def parse(assemLine):		# Inputs a string, returns a list with seperated instruction and operands
+def parse(assemLine):		# Inputs a string, returns a list of independent values from string
 	parser = re.findall(r"[\w]+|\[.*?\]", assemLine)		# Seperates elements by whitespace or comma, keep bracket content together
 	return parser
 
