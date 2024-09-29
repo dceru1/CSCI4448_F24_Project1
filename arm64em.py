@@ -3,42 +3,43 @@
 
 import re
 import sys
+import arm64em_functions
 
 
 # Register init-------------------------------
 registers = {
-	'X1': 0x0000000000000000,
-	'X2': 0x0000000000000000,
-	'X3': 0x0000000000000000,
-	'X4': 0x0000000000000000,
-	'X5': 0x0000000000000000,
-	'X6': 0x0000000000000000,
-	'X7': 0x0000000000000000,
-	'X8': 0x0000000000000000,
-	'X9': 0x0000000000000000,
-	'X10': 0x0000000000000000,
-	'X11': 0x0000000000000000,
-	'X12': 0x0000000000000000,
-	'X13': 0x0000000000000000,
-	'X14': 0x0000000000000000,
-	'X15': 0x0000000000000000,
-	'X16': 0x0000000000000000,
-	'X17': 0x0000000000000000,
-	'X18': 0x0000000000000000,
-	'X19': 0x0000000000000000,
-	'X20': 0x0000000000000000,
-	'X21': 0x0000000000000000,
-	'X22': 0x0000000000000000,
-	'X23': 0x0000000000000000,
-	'X24': 0x0000000000000000,
-	'X25': 0x0000000000000000,
-	'X26': 0x0000000000000000,
-	'X27': 0x0000000000000000,
-	'X28': 0x0000000000000000,
-	'X29': 0x0000000000000000,
-	'X30': 0x0000000000000000,
-	'SP': 0x0000000000000000,
-	'PC': 0x0000000000000000,
+	'x1': 0x0000000000000000,
+	'x2': 0x0000000000000001,
+	'x3': 0x0000000000000000,
+	'x4': 0x0000000000000000,
+	'x5': 0x0000000000000000,
+	'x6': 0x0000000000000000,
+	'x7': 0x0000000000000000,
+	'x8': 0x0000000000000010,
+	'x9': 0x0000000000000000,
+	'x10': 0x0000000000000000,
+	'x11': 0x0000000000000000,
+	'x12': 0x0000000000000000,
+	'x13': 0x0000000000000000,
+	'x14': 0x0000000000000000,
+	'x15': 0x0000000000000000,
+	'x16': 0x0000000000000000,
+	'x17': 0x0000000000000000,
+	'x18': 0x0000000000000000,
+	'x19': 0x0000000000000000,
+	'x20': 0x0000000000000000,
+	'x21': 0x0000000000000000,
+	'x22': 0x0000000000000000,
+	'x23': 0x0000000000000000,
+	'x24': 0x0000000000000000,
+	'x25': 0x0000000000000000,
+	'x26': 0x0000000000000000,
+	'x27': 0x0000000000000000,
+	'x28': 0x0000000000000000,
+	'x29': 0x0000000000000000,
+	'x30': 0x0000000000000000,
+	'sp': 0x0000000000000000,
+	'pc': 0x0000000000000000,
 	'N': 0,
 	'Z': 0
 }
@@ -57,7 +58,7 @@ def main():
 
 	# Parse data ------------------------
 	lineNumber = 0
-	for x in instructions:
+	for x in instructions:						# parser[Address, Opcode, Instruction, Operand...] 
 		parser = parse(x)					# Parse the instruction
 		print("\nLine Number:", lineNumber)			# Print line number
 		print("Address:", parser[0])				# Print Address
@@ -67,6 +68,7 @@ def main():
 		match parser[2].upper():					# Call instruction function
 			case 'SUB':
 				asmSUB(parser[3:])
+				arm64em_functions.SUB(registers, parser[3], parser[4], parser[5])
 			case 'EOR':
 				asmEOR(parser[3:])
 			case 'ADD':
@@ -96,7 +98,8 @@ def main():
 			case 'CMP':
 				asmCMP(parser[3:])
 			case 'RET':
-				asmRET(parser[3:])
+				regPrint()
+				return
 			case _:
 				print("Sorry")
 
@@ -110,7 +113,15 @@ def main():
 		lineNumber+=1
 
 
-	# Register print --------------------------
+
+# FUNCTIONS -----------------------------------------------------------
+# operands is a list of the instruction inputs
+
+def parse(assemLine):		# Inputs a string, returns a list of independent values from string
+	parser = re.findall(r"[\w]+|\[.*?\]", assemLine)		# Seperates elements by whitespace or comma, keep bracket content together
+	return parser
+
+def regPrint():			# Print register contents
 	print()
 	for x, y in registers.items():
 		if x != 'N' and x != 'Z':
@@ -119,14 +130,6 @@ def main():
 			print(f"{x}: {y}")
 
 
-
-# FUNCTIONS -----------------------------------------------------------
-# operands is a list of the instruction inputs
-
-
-def parse(assemLine):		# Inputs a string, returns a list of independent values from string
-	parser = re.findall(r"[\w]+|\[.*?\]", assemLine)		# Seperates elements by whitespace or comma, keep bracket content together
-	return parser
 
 def asmSUB(operands):
 	print("Subracting", operands)
