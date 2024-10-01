@@ -8,11 +8,11 @@ from arm64em_structures import stackClass
 
 def SUB(ret : str, arg1 : str, arg2 : str):
     # arg2 is another register
-    if( (not arg2.find("x")) and (not arg2.find("w")) ):
+    if(arg2.find("x") == 0) and (arg2.find("w") == 0):
         registers[ret] = registers[arg1] - registers[arg2]
     # arg2 is a base 16 value
     elif(not arg2.find("0x")):
-        registers[ret] = registers[arg1] - int(arg2[2:], 16)
+        registers[ret] = registers[arg1] - int(arg2, 16)
     # arg2 is a base 10 value
     else:
         registers[ret] = registers[arg1] - int(arg2, 10)
@@ -20,11 +20,11 @@ def SUB(ret : str, arg1 : str, arg2 : str):
 
 def ADD(ret : str, arg1 : str, arg2 : str):
     # arg2 is another register
-    if( (not arg2.find("x")) and (not arg2.find("w")) ):
+    if(arg2.find("x") == 0) or (arg2.find("w") == 0):
         registers[ret] = registers[arg1] + registers[arg2]
     # arg2 is a base 16 value
     elif(not arg2.find("0x")):
-        registers[ret] = registers[arg1] + int(arg2[2:], 16)
+        registers[ret] = registers[arg1] + int(arg2, 16)
     # arg2 is a base 10 value
     else:
         registers[ret] = registers[arg1] + int(arg2, 10)
@@ -32,11 +32,11 @@ def ADD(ret : str, arg1 : str, arg2 : str):
 
 def EOR(ret : str, arg1 : str, arg2 : str):
     # arg2 is another register
-    if( (not arg2.find("x")) and (not arg2.find("w")) ):
+    if(arg2.find("x") == 0) and (arg2.find("w") == 0):
         registers[ret] = registers[arg1] ^ registers[arg2]
     # arg2 is a base 16 value
-    elif(not arg2.find("0x")):
-        registers[ret] = registers[arg1] ^ int(arg2[2:], 16)
+    elif(arg2.find("0x") == 0):
+        registers[ret] = registers[arg1] ^ int(arg2, 16)
     # arg2 is a base 10 value
     else:
         registers[ret] = registers[arg1] ^ int(arg2, 10)
@@ -44,11 +44,11 @@ def EOR(ret : str, arg1 : str, arg2 : str):
 
 def AND(ret : str, arg1 : str, arg2 : str):
     # arg2 is another register
-    if( (not arg2.find("x")) and (not arg2.find("w")) ):
+    if(arg2.find("x") == 0) and (arg2.find("w") == 0):
         registers[ret] = registers[arg1] & registers[arg2]
     # arg2 is a base 16 value
     elif(not arg2.find("0x")):
-        registers[ret] = registers[arg1] & int(arg2[2:], 16)
+        registers[ret] = registers[arg1] & int(arg2, 16)
     # arg2 is a base 10 value
     else:
         registers[ret] = registers[arg1] & int(arg2, 10)
@@ -56,11 +56,11 @@ def AND(ret : str, arg1 : str, arg2 : str):
 
 def MUL(ret : str, arg1 : str, arg2 : str):
         # arg2 is another register
-    if( (not arg2.find("x")) and (not arg2.find("w")) ):
+    if (arg2.find("x") == 0) or (arg2.find("w") == 0) :
         registers[ret] = registers[arg1] * registers[arg2]
     # arg2 is a base 16 value
-    elif(not arg2.find("0x")):
-        registers[ret] = registers[arg1] * int(arg2[2:], 16)
+    elif(arg2.find("0x") == 0):
+        registers[ret] = registers[arg1] * int(arg2, 16)
     # arg2 is a base 10 value
     else:
         registers[ret] = registers[arg1] * int(arg2, 10)
@@ -68,11 +68,11 @@ def MUL(ret : str, arg1 : str, arg2 : str):
     
 def MOV(arg1 : str, arg2 : str):
     # arg2 is another register
-    if( (not arg2.find("x")) and (not arg2.find("w")) ):
+    if(arg2.find("x") == 0) and (arg2.find("w") == 0) :
         registers[arg1] = registers[arg2]
     # arg2 is a base 16 value
-    elif(not arg2.find("0x")):
-        registers[arg1] = int(arg2[2:], 16)
+    elif not arg2.find("0x"):
+        registers[arg1] = int(arg2, 16)
     # arg2 is a base 10 value
     else:
         registers[arg1] = int(arg2, 10)
@@ -80,37 +80,54 @@ def MOV(arg1 : str, arg2 : str):
     
 def STR(stack : stackClass, arg1 : str, arg2 : str):
     # command includes a STR immediate offset
-    if( (not arg2.find("[")) and (arg2.find("]")) ):
+    if (not arg2.find("[")) and (arg2.find("]")) :
         parser = re.findall(r"[\w]+|^\[.*?^\]", arg2)
-        if(parser[0] == 'sp'):
-            stack.p
-        registers[arg2] = registers[arg1]
-    # arg2 is a base 16 value
-    elif(not arg2.find("0x")):
-        registers[arg1] = int(arg2[2:], 16)
-    # arg2 is a base 10 value
-    else:
-        registers[arg1] = int(arg2, 10)
+        if parser[0] == 'sp' and len(parser) > 1:
+            stack.push(registers[arg1],int(parser[1]) + int(registers['pc']))
+        elif len(parser) == 1:
+            stack.push(registers[arg1],registers['pc'])
+        else: raise AssertionError(f"Unknown STR register {parser[0]}")
+    else: raise AssertionError(f"Cannot perform a STR directly on a register!")
     return
     
-def STRB(registers : dict, ret : str, arg1 : str, arg2 : str):
+def STRB(stack : stackClass, arg1 : str, arg2 : str):
     return
     
-def LDR(registers : dict, ret : str, arg1 : str, arg2 : str):
+def LDR(stack : stackClass, arg1 : str, arg2 : str):
+    if (not arg2.find("[")) and (arg2.find("]")) :
+        parser = re.findall(r"[\w]+|^\[.*?^\]", arg2)
+        if parser[0] == 'sp' :
+            registers[arg1] = stack.pop(int(parser[1]) + registers['pc'])
+        else: raise AssertionError(f"Unknown LDR register {parser[0]}")
+    else: raise AssertionError(f"Cannot perform a STR directly on a register!")
     return
     
 def LDRB(registers : dict, ret : str, arg1 : str, arg2 : str):
     return
 
-def B(registers : dict, ret : str, arg1 : str, arg2 : str):
-    return
+def B(x : int, arg1 : str):
+    registers['pc'] = int(arg1,16)
+    print()
+    # divide by 4 so that x knows what line number it was at
+    return int(int(arg1,16)/4) - 1
 
-def BGT(registers : dict, ret : str, arg1 : str, arg2 : str):
-    return
+def BGT(x : int, arg1 : str):
+    if (registers['Z'] == 0) and (registers['N'] == 1):
+        return B(x, arg1)
 
-def BLE(registers : dict, ret : str, arg1 : str, arg2 : str):
-    return
+def BLE(x : int, arg1 : str):
+    if (registers['Z'] == 1) and (registers['N'] == 0):
+        return B(x, arg1)
 
-def CMP(registers : dict, ret : str, arg1 : str, arg2 : str):
+def CMP(arg1 : str, arg2 : str):
+    if(arg2.find("x") == 0) and (arg2.find("w") == 0):
+        res = registers[arg1] - registers[arg2]
+    # arg2 is a base 16 value
+    elif(not arg2.find("0x")):
+        res = registers[arg1] - int(arg2, 16)
+    # arg2 is a base 10 value
+    else:
+        res = registers[arg1] - int(arg2, 10)
+    print(res)
     return
     

@@ -17,12 +17,12 @@ def main():
 	print(len(stack.stack))
 
 	# Stack testing
-	stack.push(0x1A)
-	stack.push(0xFF,1)
-	stack.push(0x4B,2)
-	stack.stackPrint()
-	stack.push(0xAA,255)
-	stack.stackPrint()
+	#stack.push(0x1A)
+	#stack.push(0xFF,1)
+	#stack.push(0x4B,2)
+	#stack.stackPrint()
+	#stack.push(0xAA,255)
+	#stack.stackPrint()
 	#value = stack.pop()
 
 	#Take file input----------------------
@@ -35,53 +35,70 @@ def main():
 
 
 	# Parse data ------------------------
-	lineNumber = 0
-	for x in instructions:						# parser[Address, Opcode, Instruction, Operand...] 
-		parser = parse(x)					# Parse the instruction
-		print("\nLine Number:", lineNumber)			# Print line number
+	x = 0
+	while x in range(0,len(instructions)):						# parser[Address, Opcode, Instruction, Operand...] 
+		parser = parse(instructions[x])					# Parse the instruction
+		print("\nLine Number:", x)			# Print line number
 		print("Address:", parser[0])				# Print Address
 		print("Opcode:", parser[1])				# Print Opcode
 		print("Instruction", parser[2].upper())			# Print instruction
 
+		registers['pc'] = int(parser[0],16)
 		match parser[2].upper():					# Call instruction function
 			case 'SUB':
 				asmSUB(parser[3:])
-				arm_instruct.SUB(registers, parser[3], parser[4], parser[5])
+				arm_instruct.SUB(parser[3], parser[4], parser[5])
 			case 'EOR':
 				asmEOR(parser[3:])
+				arm_instruct.EOR(parser[3],parser[4], parser[5])
 			case 'ADD':
 				asmADD(parser[3:])
+				arm_instruct.ADD(parser[3],parser[4], parser[5])
 			case 'AND':
 				asmAND(parser[3:])
+				arm_instruct.AND(parser[3],parser[4], parser[5])
 			case 'MUL':
 				asmMUL(parser[3:])
+				arm_instruct.MUL(parser[3],parser[4], parser[5])
 			case 'MOV':
 				asmMOV(parser[3:])
+				arm_instruct.MOV(parser[3],parser[4])
 			case 'STR':
 				asmSTR(parser[3:])
-				arm_instruct.STR(registers, stack, parser[3], parser[4])
+				arm_instruct.STR(stack, parser[3], parser[4])
 			case 'STRB':
 				asmSTRB(parser[3:])
 			case 'LDR':
 				asmLDR(parser[3:])
+				arm_instruct.LDR(stack,parser[3],parser[4])
 			case 'LDRB':
 				asmLDRB(parser[3:])
 			case 'NOP':
 				asmNOP(parser[3:])
+				continue
 			case 'B':
+				x = arm_instruct.B(x, parser[3])
 				asmB(parser[3:])
+				continue
 			case 'B.GT':
 				asmBGT(parser[3:])
+				x = arm_instruct.BGT(x, parser[3])
+				continue
 			case 'B.LE':
 				asmBLE(parser[3:])
+				x = arm_instruct.BLE(x, parser[3])
+				continue
 			case 'CMP':
 				asmCMP(parser[3:])
+				x = arm_instruct.CMP(x, parser[3])
 			case 'RET':
 				regPrint()
-				stack.stackPrint()
+				#stack.stackPrint()
+				fileIn.close()
 				return
 			case _:
 				print("Sorry")
+		x += 1
 
 
 
@@ -89,8 +106,7 @@ def main():
 		for n in parser[3:]:
 			print("Operand", operandCounter, ":", n)	# Print operand (looped)
 			operandCounter+=1
-
-		lineNumber+=1
+		#regPrint()
 
 # FUNCTIONS -----------------------------------------------------------
 # operands is a list of the instruction inputs

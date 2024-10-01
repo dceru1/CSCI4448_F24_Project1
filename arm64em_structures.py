@@ -1,14 +1,17 @@
 # Register init-------------------------------
 registers = {
+	#https://developer.arm.com/documentation/102374/0101/Registers-in-AArch64---other-registers
+	#tl;dr xzr is a all zero register that cannot be written to. Used to 'clear' registers.
+	'xzr': 0x0000000000000000,
 	'x0': 0x0000000000000000,
 	'x1': 0x0000000000000000,
-	'x2': 0x0000000000000001,
+	'x2': 0x0000000000000000,
 	'x3': 0x0000000000000000,
 	'x4': 0x0000000000000000,
 	'x5': 0x0000000000000000,
 	'x6': 0x0000000000000000,
 	'x7': 0x0000000000000000,
-	'x8': 0x0000000000000010,
+	'x8': 0x0000000000000000,
 	'x9': 0x0000000000000000,
 	'x10': 0x0000000000000000,
 	'x11': 0x0000000000000000,
@@ -50,12 +53,12 @@ class stackClass:
 		else:
 			raise OverflowError("Stack Overflow: Stack exceeds maximum size")
 	def pop(self, index : int = 0):
-		if index > 0 and self.stack[0] != None:
+		if index > 0 and self.stack[index] != None:
 			ret = self.stack[index]
 			self.stack[index] = None
 			return ret
 		else:
-			raise IndexError("Stack Underflow: Can not pop, stack empty")
+			raise IndexError("Stack Underflow: Can not pop, stack empty @ position or in general")
 	def stackView(self):
 		if self.stack[0] != 0:
 			return self.stack[-1]
