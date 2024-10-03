@@ -37,7 +37,8 @@ registers = {
 	'sp': 0x0000000000000000,
 	'pc': 0x0000000000000000,
 	'N': 0,
-	'Z': 0
+	'Z': 0,
+	'V': 0
 }
 
 class stackClass:
@@ -55,7 +56,6 @@ class stackClass:
 	def pop(self, index : int = 0):
 		if index > 0 and self.stack[index] != None:
 			ret = self.stack[index]
-			self.stack[index] = None
 			return ret
 		else:
 			raise IndexError("Stack Underflow: Can not pop, stack empty @ position or in general")

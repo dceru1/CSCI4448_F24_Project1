@@ -27,6 +27,7 @@ def main():
 
 	#Take file input----------------------
 	fileName = sys.argv[1]
+	#fileName = "./test_code_to_emulate/simple/test4/test4.txt"
 	fileIn = open(fileName, 'r')
 
 
@@ -75,7 +76,6 @@ def main():
 				asmLDRB(parser[3:])
 			case 'NOP':
 				asmNOP(parser[3:])
-				continue
 			case 'B':
 				x = arm_instruct.B(x, parser[3])
 				asmB(parser[3:])
@@ -90,12 +90,12 @@ def main():
 				continue
 			case 'CMP':
 				asmCMP(parser[3:])
-				x = arm_instruct.CMP(x, parser[3])
+				arm_instruct.CMP(parser[3], parser[4])
 			case 'RET':
 				regPrint()
 				#stack.stackPrint()
 				fileIn.close()
-				return
+				return 0
 			case _:
 				print("Sorry")
 		x += 1
@@ -106,21 +106,22 @@ def main():
 		for n in parser[3:]:
 			print("Operand", operandCounter, ":", n)	# Print operand (looped)
 			operandCounter+=1
-		#regPrint()
+		regPrint()
 
 # FUNCTIONS -----------------------------------------------------------
 # operands is a list of the instruction inputs
 
 # Inputs a string, returns a list of independent values from string
 def parse(assemLine):	
-	parser = re.findall(r"[\w]+|\[.*?\]", assemLine)		# Seperates elements by whitespace or comma, keep bracket content together
+	parser = re.findall(r"[\.\w]+|\[.*?\]", assemLine)
+	print(parser)		# Seperates elements by whitespace or comma, keep bracket content together
 	return parser
 
 # Print register content
 def regPrint():
 	print()
 	for x, y in registers.items():
-		if x != 'N' and x != 'Z':
+		if x != 'N' and x != 'Z' and x != 'V':
 			print(f"{x}: {y:#018x}")
 		else:
 			print(f"{x}: {y}")
