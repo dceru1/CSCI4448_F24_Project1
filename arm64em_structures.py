@@ -1,9 +1,64 @@
-# Register init-------------------------------
+class stackClass:
+	def __init__(self):
+		self.stack = bytearray(256)
+		self.pointer = 256
+		for i in range(len(self.stack)):
+			self.stack.append(0x00)
+	def push(self, input : bytearray, index : int = 0) -> None:
+		pos = (256 - self.pointer) + index
+		for i in range(len(input)):
+			self.stack[i + pos] = input[i]
+
+	##FLAGS: 0 = x reg, 1 = w reg, 2 = a LDRB command
+	def pop(self, index : int = 0, registerFlag : int = 0) -> int:
+			pos = (256 - self.pointer) + index
+			if registerFlag == 0:
+				num = self.stack[pos:pos+16]
+			elif registerFlag == 1:
+				num = self.stack[pos:pos+8]
+			elif registerFlag == 2:
+				num = self.stack[pos]
+			return int(num.hex(),16)
+	def stackView(self):
+		if self.stack[0] != 0:
+			return self.stack[-1]
+		else:
+			raise IndexError("Stack Underflow: Stack empty")
+	def stackPrint(self):
+		addr = 0	# Address print counter
+		print()
+		for i in range(255, -1, -1):					# Print Bytes + Translate
+
+			if (i+1) % 16 == 0:					# Print address
+				print(f"{addr:08x}", end="\t")
+				addr+=16
+			print(f"{int(self.stack[i]):02x}", "", end="")
+
+			if i % 16 == 0:						# Every 16 bytes, perform the translator
+				print("|", end="")
+				for j in range(16):				# Print 16 values (1 for each byte)
+					if self.stack[(i+16)-(j+1)] != 0:
+						print(chr(self.stack[(i+16)-(j+1)]), end="")	# Print translated version of the byte
+					else:
+						print(".", end="")		# If empty print '.'
+
+				print("|\n")					# Close line
+	
+	# Operator overloads, used to manipulate the stack pointer in the register dict.
+	def __eq__(self) -> int: return self.pointer
+
+	def __add__(self, op2 : int) -> int: return self.pointer + op2
+
+	def __sub__(self, op2 : int) -> int: return self.pointer - op2
+
+stack = stackClass()
+
+	# Register init-------------------------------
 registers = {
 	#https://developer.arm.com/documentation/102374/0101/Registers-in-AArch64---other-registers
 	#tl;dr xzr is a all zero register that cannot be written to. Used to 'clear' registers.
 	'xzr': 0x0000000000000000,
-	'x0': 0x0000000000000000,
+	'x0':  0x0000000000000000,
 	'x1': 0x0000000000000000,
 	'x2': 0x0000000000000000,
 	'x3': 0x0000000000000000,
@@ -34,60 +89,9 @@ registers = {
 	'x28': 0x0000000000000000,
 	'x29': 0x0000000000000000,
 	'x30': 0x0000000000000000,
-	'sp': 0x0000000000000000,
+	'sp': stack,
 	'pc': 0x0000000000000000,
 	'N': 0,
 	'Z': 0,
 	'V': 0
 }
-
-class stackClass:
-	def __init__(self, maxSize):
-		self.stack = []
-		self.maxSize = int(256)
-		for i in range(int(256)):
-			self.stack.append(None)
-
-	def push(self, input, index : int = 0):
-		if index < int(256):
-			self.stack[index] = input
-		else:
-			raise OverflowError("Stack Overflow: Stack exceeds maximum size")
-	def pop(self, index : int = 0):
-		if index > 0 and self.stack[index] != None:
-			ret = self.stack[index]
-			return ret
-		else:
-			raise IndexError("Stack Underflow: Can not pop, stack empty @ position or in general")
-	def stackView(self):
-		if self.stack[0] != 0:
-			return self.stack[-1]
-		else:
-			raise IndexError("Stack Underflow: Stack empty")
-	def stackPrint(self):
-		addr = 0	# Address print counter
-		fillStack = self.stack + [None] * (256 - len(self.stack))	# Fill stack with None to max out size
-		print()
-		for i in range(255, -1, -1):					# Print Bytes + Translate
-
-			if (i+1) % 16 == 0:					# Print address
-				print(f"{addr:08x}", end="\t")
-				addr+=16
-
-			byte = fillStack[i]					# Byte starts at most recent in stack
-
-			if byte is not None:					# If Byte isn't empty, print the byte
-				print(f"{format(byte, "x")}", "", end="")
-			else:							# If Byte is empty, print 00
-				print("00 ", end="")
-
-			if i % 16 == 0:						# Every 16 bytes, perform the translator
-				print("|", end="")
-				for j in range(16):				# Print 16 values (1 for each byte)
-					if fillStack[(i+16)-(j+1)] != None:
-						print(chr(fillStack[(i+16)-(j+1)]), end="")	# Print translated version of the byte
-					else:
-						print(".", end="")		# If empty print '.'
-
-				print("|\n")					# Close line
-

@@ -5,31 +5,16 @@ import re
 import sys
 
 import arm64em_functions as arm_instruct
-from arm64em_structures import registers
-from arm64em_structures import stackClass
+from arm64em_structures import registers, stack
 
 
 # main -------------------------------------------------------------------
 def main():
 
-	# Initialize stack -----------------------
-	stack = stackClass(256)
-	print(len(stack.stack))
-
-	# Stack testing
-	#stack.push(0x1A)
-	#stack.push(0xFF,1)
-	#stack.push(0x4B,2)
-	#stack.stackPrint()
-	#stack.push(0xAA,255)
-	#stack.stackPrint()
-	#value = stack.pop()
-
 	#Take file input----------------------
 	fileName = sys.argv[1]
-	#fileName = "./test_code_to_emulate/simple/test4/test4.txt"
+	#fileName = "./test_code_to_emulate/advanced/test2/test2.txt"
 	fileIn = open(fileName, 'r')
-
 
 	# Read file -----------------------
 	instructions  = fileIn.readlines()
@@ -66,14 +51,16 @@ def main():
 				arm_instruct.MOV(parser[3],parser[4])
 			case 'STR':
 				asmSTR(parser[3:])
-				arm_instruct.STR(stack, parser[3], parser[4])
+				arm_instruct.STR(parser[3], parser[4])
 			case 'STRB':
 				asmSTRB(parser[3:])
+				arm_instruct.STRB(parser[3], parser[4])
 			case 'LDR':
 				asmLDR(parser[3:])
-				arm_instruct.LDR(stack,parser[3],parser[4])
+				arm_instruct.LDR(parser[3],parser[4])
 			case 'LDRB':
 				asmLDRB(parser[3:])
+				arm_instruct.LDRB(parser[3], parser[4])
 			case 'NOP':
 				asmNOP(parser[3:])
 			case 'B':
@@ -93,7 +80,7 @@ def main():
 				arm_instruct.CMP(parser[3], parser[4])
 			case 'RET':
 				regPrint()
-				#stack.stackPrint()
+				stack.stackPrint()
 				fileIn.close()
 				return 0
 			case _:
@@ -113,8 +100,7 @@ def main():
 
 # Inputs a string, returns a list of independent values from string
 def parse(assemLine):	
-	parser = re.findall(r"[\.\w]+|\[.*?\]", assemLine)
-	print(parser)		# Seperates elements by whitespace or comma, keep bracket content together
+	parser = re.findall(r"[\.\w]+|\[.*?\]", assemLine)		# Seperates elements by whitespace or comma, keep bracket content together
 	return parser
 
 # Print register content
