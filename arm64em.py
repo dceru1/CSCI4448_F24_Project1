@@ -65,6 +65,7 @@ def main():
 
 		match parser[0]:					# Call instruction function
 			case 'SUB':
+<<<<<<< Updated upstream
 				asmSUB(parser[1:])
 			case 'EOR':
 				asmEOR(parser[1:])
@@ -94,10 +95,49 @@ def main():
 				asmBLE(parser[1:])
 			case 'CMP':
 				asmCMP(parser[1:])
+=======
+				arm_instruct.SUB(parser[3], parser[4], parser[5])
+			case 'EOR':
+				arm_instruct.EOR(parser[3],parser[4], parser[5])
+			case 'ADD':
+				arm_instruct.ADD(parser[3],parser[4], parser[5])
+			case 'AND':
+				arm_instruct.AND(parser[3],parser[4], parser[5])
+			case 'MUL':
+				arm_instruct.MUL(parser[3],parser[4], parser[5])
+			case 'MOV':
+				arm_instruct.MOV(parser[3],parser[4])
+			case 'STR':
+				arm_instruct.STR(parser[3], parser[4])
+			case 'STRB':
+				arm_instruct.STRB(parser[3], parser[4])
+			case 'LDR':
+				arm_instruct.LDR(parser[3],parser[4])
+			case 'LDRB':
+				arm_instruct.LDRB(parser[3], parser[4])
+			case 'NOP':
+				pass
+			case 'B':
+				x = arm_instruct.B(x, parser[3])
+				continue
+			case 'B.GT':
+				x = arm_instruct.BGT(x, parser[3])
+				continue
+			case 'B.LE':
+				x = arm_instruct.BLE(x, parser[3])
+				continue
+			case 'CMP':
+				arm_instruct.CMP(parser[3], parser[4])
+>>>>>>> Stashed changes
 			case 'RET':
 				asmRET(parser[1:])
 			case _:
+<<<<<<< Updated upstream
 				print("Sorry")
+=======
+				print("Couldn't read instruction")
+		x += 1
+>>>>>>> Stashed changes
 
 
 
@@ -105,8 +145,17 @@ def main():
 		for n in parser[1:]:
 			print("Operand", operandCounter, ":", n)	# Print operand (looped)
 			operandCounter+=1
+<<<<<<< Updated upstream
 
 		lineNumber+=1
+=======
+		regPrint()	# Print each iteration remove comment
+		stack.stackPrint()		#Test
+		print(registers.items())		# test
+	#regPrint()	# Print once at the end of execution remove comment
+# FUNCTIONS -----------------------------------------------------------
+# operands is a list of the instruction inputs
+>>>>>>> Stashed changes
 
 
 	# Register print --------------------------
@@ -117,6 +166,7 @@ def main():
 		else:
 			print(f"{x}: {y}")
 
+<<<<<<< Updated upstream
 
 
 # FUNCTIONS -----------------------------------------------------------
@@ -173,5 +223,7 @@ def asmRET(operands):
 
 
 
+=======
+>>>>>>> Stashed changes
 
 main()
