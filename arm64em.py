@@ -51,7 +51,7 @@ def main():
 			case 'LDRB':
 				arm_instruct.LDRB(parser[3], parser[4])
 			case 'NOP':
-				continue
+				pass
 			case 'B':
 				x = arm_instruct.B(x, parser[3])
 				continue
