@@ -18,6 +18,7 @@ class stackClass:
 				num = self.stack[pos:pos+4]
 			elif registerFlag == 2:
 				num = self.stack[pos]
+				return num
 			return int(num.hex(),16)
 	def stackView(self):
 		if self.stack[0] != 0:

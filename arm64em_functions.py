@@ -143,7 +143,7 @@ def LDRB(arg1 : str, arg2 : str):
             stackOffset = registers[parser[0]] - stack.pointer + registers[parser[1]]
         else:
             stackOffset = registers[parser[0]] - stack.pointer + int(parser[1])
-        registers[arg1] = stack.pop(stackOffset, 0)
+        registers[arg1] = stack.pop(stackOffset, 2)
     return
 
 def B(x : int, arg1 : str):
