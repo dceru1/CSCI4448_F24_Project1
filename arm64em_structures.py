@@ -11,14 +11,16 @@ class stackClass:
 
 	##FLAGS: 0 = x reg, 1 = w reg, 2 = a LDRB command
 	def pop(self, index : int = 0, registerFlag : int = 0) -> int:
-			pos = (255 - self.pointer) + index				# changed to 255 from 256
+			pos = 255 - int(registers["sp"]) - index				# changed to 255 from 256
 			if registerFlag == 0:
-				num = self.stack[255 - registers["sp"] - index]
-				print("Index:", index, "Num:", num)									# Test code
+				num = self.stack[pos:pos+8]							# target point to grab
+				self.stack[pos:pos+8] = b'\x00\x00\x00\x00\x00\x00\x00\x00'			# remove from stack
 			elif registerFlag == 1:
-				num = self.stack[pos:pos+8]
+				num = self.stack[pos:pos+4]							# target point to grab
+				self.stack[pos:pos+4] = b'\x00\x00\x00\x00'				# remove from stack
 			elif registerFlag == 2:
 				num = self.stack[pos]
+			num = num[::-1]							# reverse for register
 			return int(num.hex(),16)
 	def stackView(self):
 		if self.stack[0] != 0:
