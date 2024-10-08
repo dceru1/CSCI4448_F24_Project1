@@ -1,8 +1,6 @@
 import re
 from arm64em_structures import registers,stack
 
-
-
 def SUB(ret : str, arg1 : str, arg2 : str):
     if ret.find("w") == 0:
         ret = "x" + ret[1]
@@ -140,11 +138,12 @@ def LDR(arg1 : str, arg2 : str):
 def LDRB(arg1 : str, arg2 : str):
     if (not arg2.find("[")) and (arg2.find("]")):
         parser = re.findall(r"[\w]+|^\[.*?^\]", arg2)
+        arg1 = 'x' + arg1[1]
         if parser[1].find("x") == 0:
             stackOffset = registers[parser[0]] - stack.pointer + registers[parser[1]]
         else:
             stackOffset = registers[parser[0]] - stack.pointer + int(parser[1])
-        registers[arg2] = stack.pop(stackOffset, 0)
+        registers[arg1] = stack.pop(stackOffset, 0)
     return
 
 def B(x : int, arg1 : str):

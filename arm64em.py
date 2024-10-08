@@ -13,7 +13,6 @@ def main():
 
 	#Take file input----------------------
 	fileName = sys.argv[1]
-	#fileName = "./test_code_to_emulate/advanced/test2/test2.txt"
 	fileIn = open(fileName, 'r')
 
 	# Read file -----------------------
