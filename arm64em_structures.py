@@ -37,12 +37,14 @@ class stackClass:
 			if i % 16 == 0:						# Every 16 bytes, perform the translator
 				print("|", end="")
 				for j in range(16):				# Print 16 values (1 for each byte)
-					if self.stack[(i+16)-(j+1)] != 0:
+					if self.stack[(i+16)-(j+1)] != 0 and self.stack[(i+16)-(j+1)] > 0x19:
 						print(chr(self.stack[(i+16)-(j+1)]), end="")	# Print translated version of the byte
+					elif self.stack[(i+16)-(j+1)] != 0:
+						print("⚠", end="")						# Ascii bounds, below 20 does weird things
 					else:
 						print(".", end="")		# If empty print '.'
 
-				print("|\n")					# Close line
+				print("|\n")					# Close line				# Close line
 	
 	# Operator overloads, used to manipulate the stack pointer in the register dict.
 	def __eq__(self) -> int: return self.pointer
