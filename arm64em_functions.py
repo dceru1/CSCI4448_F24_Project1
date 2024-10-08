@@ -1,7 +1,5 @@
 import re
 from arm64em_structures import registers,stack
-#Function to convert a w reg to a xreg
-#def wreg_to_xreg(registers : dict, )
 
 
 
@@ -96,15 +94,15 @@ def STR(arg1 : str, arg2 : str):
         parser = re.findall(r"[\w]+|^\[.*?^\]", arg2)
         if parser[0] == 'sp' and len(parser) > 1:
             if arg1.find('x') == 0:
-                num = registers[arg1].to_bytes(length=16)
-            elif arg1.find('w') == 0:
                 num = registers[arg1].to_bytes(length=8)
+            elif arg1.find('w') == 0:
+                num = registers[arg1].to_bytes(length=4)
             stack.push(num,int(parser[1]))
         elif len(parser) == 1:
             if arg1.find('x') == 0:
-                num = registers[arg1].to_bytes(length=16)
-            elif arg1.find('w') == 0:
                 num = registers[arg1].to_bytes(length=8)
+            elif arg1.find('w') == 0:
+                num = registers[arg1].to_bytes(length=4)
             stack.push(num)
         else: raise AssertionError(f"Unknown STR register {parser[0]}")
     else: raise AssertionError(f"Cannot perform a STR directly on a register!")
@@ -142,13 +140,11 @@ def LDR(arg1 : str, arg2 : str):
 def LDRB(arg1 : str, arg2 : str):
     if (not arg2.find("[")) and (arg2.find("]")):
         parser = re.findall(r"[\w]+|^\[.*?^\]", arg2)
-        arg1 = 'x' + arg1[1]
         if parser[1].find("x") == 0:
             stackOffset = registers[parser[0]] - stack.pointer + registers[parser[1]]
         else:
             stackOffset = registers[parser[0]] - stack.pointer + int(parser[1])
-        arg2Bytes = registers[arg1].to_bytes(length=1)
-        stack.push(arg2Bytes, stackOffset)
+        registers[arg2] = stack.pop(stackOffset, 0)
     return
 
 def B(x : int, arg1 : str):

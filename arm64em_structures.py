@@ -13,9 +13,9 @@ class stackClass:
 	def pop(self, index : int = 0, registerFlag : int = 0) -> int:
 			pos = (256 - self.pointer) + index
 			if registerFlag == 0:
-				num = self.stack[pos:pos+16]
-			elif registerFlag == 1:
 				num = self.stack[pos:pos+8]
+			elif registerFlag == 1:
+				num = self.stack[pos:pos+4]
 			elif registerFlag == 2:
 				num = self.stack[pos]
 			return int(num.hex(),16)
